@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Для тебя 💕</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --rose: #e8547a;
+    --blush: #f7c5d0;
+    --deep: #c0324f;
+    --cream: #fff8f0;
+    --gold: #e8c07a;
+    --dark: #3a1a24;
+  }
+
+  body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a0a10 0%, #2d1020 40%, #1a0a10 100%);
+    font-family: 'Cormorant Garamond', serif;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── FLOATING HEARTS BACKGROUND ── */
+  #hearts-canvas {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── CONTAINER ── */
+  .container {
+    position: relative;
+    z-index: 10;
+    width: min(460px, 92vw);
+    background: rgba(255,248,240,0.07);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(232,84,122,0.3);
+    border-radius: 28px;
+    padding: 52px 44px 48px;
+    box-shadow:
+      0 0 60px rgba(232,84,122,0.15),
+      0 0 120px rgba(192,50,79,0.08),
+      inset 0 1px 0 rgba(255,255,255,0.12);
+    text-align: center;
+    min-height: 380px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── SLIDES ── */
+  .slide {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+    animation: slideIn 0.6s cubic-bezier(.22,1,.36,1) both;
+    width: 100%;
+  }
+  .slide.active { display: flex; }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(24px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* ── TYPOGRAPHY ── */
+  .slide-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.5rem, 5vw, 2rem);
+    color: var(--cream);
+    line-height: 1.3;
+    text-shadow: 0 0 30px rgba(232,84,122,0.5);
+  }
+  .slide-title em {
+    color: var(--blush);
+    font-style: italic;
+  }
+
+  .slide-sub {
+    font-size: clamp(1rem, 3.5vw, 1.2rem);
+    color: rgba(247,197,208,0.85);
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  .big-emoji {
+    font-size: clamp(3.5rem, 12vw, 5rem);
+    line-height: 1;
+    filter: drop-shadow(0 0 20px rgba(232,84,122,0.6));
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(-10px); }
+  }
+
+  /* ── BUTTONS ── */
+  .btn-row {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 6px;
+  }
+
+  .btn {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    padding: 13px 28px;
+    border-radius: 50px;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    transition: transform 0.15s, box-shadow 0.15s;
+    user-select: none;
+  }
+
+  .btn-yes {
+    background: linear-gradient(135deg, var(--rose) 0%, var(--deep) 100%);
+    color: #fff;
+    box-shadow: 0 4px 24px rgba(232,84,122,0.45);
+  }
+  .btn-yes:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(232,84,122,0.6); }
+  .btn-yes:active { transform: scale(0.96); }
+
+  .btn-no {
+    background: rgba(255,255,255,0.08);
+    color: var(--blush);
+    border: 1px solid rgba(232,84,122,0.35);
+    transition: transform 0.18s cubic-bezier(.22,1,.36,1), box-shadow 0.15s, left 0.18s, top 0.18s, opacity 0.3s;
+    position: relative;
+  }
+  .btn-no:hover { background: rgba(255,255,255,0.13); }
+
+  .btn-admit {
+    background: linear-gradient(135deg, #e8c07a 0%, #c98a3a 100%);
+    color: var(--dark);
+    font-weight: 600;
+    box-shadow: 0 4px 24px rgba(232,192,122,0.45);
+  }
+  .btn-admit:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(232,192,122,0.6); }
+  .btn-admit:active { transform: scale(0.96); }
+
+  /* ── NO BUTTON FLEE ANIMATION ── */
+  .btn-no.flee {
+    animation: flee 0.35s cubic-bezier(.36,.07,.19,.97) both;
+  }
+  @keyframes flee {
+    0%   { transform: translate(0,0) rotate(0deg); }
+    20%  { transform: translate(-18px, -12px) rotate(-8deg); }
+    50%  { transform: translate(24px, -8px) rotate(12deg); }
+    80%  { transform: translate(-10px, 6px) rotate(-5deg); }
+    100% { transform: translate(0,0) rotate(0deg); }
+  }
+
+  /* ── CLICKABLE EMOJI ── */
+  .emoji-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: clamp(3rem, 12vw, 5rem);
+    filter: drop-shadow(0 0 16px rgba(232,84,122,0.5));
+    transition: transform 0.2s, filter 0.2s;
+    animation: float 3s ease-in-out infinite;
+    line-height: 1;
+  }
+  .emoji-btn:hover {
+    transform: scale(1.15);
+    filter: drop-shadow(0 0 28px rgba(232,84,122,0.9));
+  }
+  .emoji-btn:active { transform: scale(1.05); }
+
+  .emoji-label {
+    font-size: 0.85rem;
+    color: rgba(247,197,208,0.6);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: -10px;
+  }
+
+  /* ── ENVELOPE ── */
+  .envelope-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+  }
+  .envelope {
+    font-size: clamp(3.5rem, 13vw, 5.5rem);
+    filter: drop-shadow(0 0 20px rgba(232,192,122,0.6));
+    transition: transform 0.25s, filter 0.25s;
+    animation: float 3s ease-in-out infinite 0.4s;
+    line-height: 1;
+    display: block;
+  }
+  .envelope-wrap:hover .envelope { transform: scale(1.12); filter: drop-shadow(0 0 35px rgba(232,192,122,0.9)); }
+  .envelope-wrap:active .envelope { transform: scale(1.04); }
+
+  /* ── LETTER SLIDE ── */
+  .letter-box {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(232,84,122,0.2);
+    border-radius: 18px;
+    padding: 30px 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .letter-box::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(232,84,122,0.06) 0%, rgba(232,192,122,0.04) 100%);
+    border-radius: 18px;
+  }
+  .letter-text {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.25rem, 4.5vw, 1.6rem);
+    color: var(--cream);
+    line-height: 1.5;
+    font-style: italic;
+    position: relative;
+    text-shadow: 0 0 20px rgba(232,84,122,0.4);
+  }
+  .letter-sign {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--gold);
+    margin-top: 18px;
+    font-style: italic;
+    position: relative;
+  }
+
+  /* ── PHOTO SLIDE ── */
+  .photo-circle {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    border: 3px solid var(--rose);
+    box-shadow: 0 0 0 6px rgba(232,84,122,0.2), 0 0 40px rgba(232,84,122,0.4);
+    overflow: hidden;
+    background: linear-gradient(135deg, #3a1a24, #1a0a10);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 5rem;
+    animation: pulse-ring 2s ease-in-out infinite;
+  }
+  @keyframes pulse-ring {
+    0%,100% { box-shadow: 0 0 0 6px rgba(232,84,122,0.2), 0 0 40px rgba(232,84,122,0.4); }
+    50%      { box-shadow: 0 0 0 12px rgba(232,84,122,0.08), 0 0 60px rgba(232,84,122,0.6); }
+  }
+
+  .photo-caption {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    color: var(--gold);
+    font-style: italic;
+    text-shadow: 0 0 16px rgba(232,192,122,0.5);
+  }
+
+  /* ── DECORATIVE DIVIDER ── */
+  .divider {
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--rose), transparent);
+    margin: 0 auto;
+  }
+
+  /* ── SPARKLES ── */
+  .sparkles {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 5;
+  }
+  .sparkle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--gold);
+    opacity: 0;
+    animation: sparkle-anim 2s ease-in-out infinite;
+  }
+  @keyframes sparkle-anim {
+    0%   { opacity: 0; transform: scale(0); }
+    50%  { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(0) translateY(-20px); }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="hearts-canvas"></canvas>
+
+<div class="sparkles" id="sparkles"></div>
+
+<div class="container">
+
+  <!-- SLIDE 1: Вопрос -->
+  <div class="slide active" id="slide1">
+    <div class="big-emoji">🥺</div>
+    <h1 class="slide-title">Ты скучала<br><em>по мне?</em></h1>
+    <div class="divider"></div>
+    <div class="btn-row">
+      <button class="btn btn-yes" onclick="goToSlide(3)">Да, скучала 💕</button>
+      <button class="btn btn-no" id="btn-no" onclick="handleNo()">Нет</button>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: Не верю -->
+  <div class="slide" id="slide2">
+    <div class="big-emoji">🙈</div>
+    <h1 class="slide-title"><em>Не верю!</em></h1>
+    <p class="slide-sub">Признавайся... 😏</p>
+    <div class="divider"></div>
+    <button class="btn btn-admit" onclick="goToSlide(3)">Ладно... скучаю 🥹</button>
+  </div>
+
+  <!-- SLIDE 3: Так и знал -->
+  <div class="slide" id="slide3">
+    <div class="big-emoji">😼</div>
+    <h1 class="slide-title">Так <em>и знал!</em></h1>
+    <div class="divider"></div>
+    <button class="emoji-btn" onclick="goToSlide(4)" title="Нажми на цветок">🌸</button>
+    <p class="emoji-label">нажми на цветок</p>
+  </div>
+
+  <!-- SLIDE 4: Кое-что для тебя -->
+  <div class="slide" id="slide4">
+    <h1 class="slide-title">И ещё кое-что<br><em>для тебя</em></h1>
+    <div class="big-emoji" style="animation-delay:0.2s">🐻</div>
+    <div class="divider"></div>
+    <div class="envelope-wrap" onclick="goToSlide(5)">
+      <span class="envelope">💌</span>
+      <p class="emoji-label">нажми на конверт</p>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: Письмо -->
+  <div class="slide" id="slide5">
+    <div class="big-emoji" style="font-size:3rem; animation-delay:0.1s">💌</div>
+    <div class="letter-box">
+      <p class="letter-text">«Я тебя безумно люблю и хочу быть с тобой»</p>
+      <p class="letter-sign">— Владимир ❤️</p>
+    </div>
+    <button class="btn btn-yes" onclick="goToSlide(6)" style="margin-top:4px">Дальше 💫</button>
+  </div>
+
+  <!-- SLIDE 6: Фото -->
+  <div class="slide" id="slide6">
+    <div class="photo-circle">
+      <img src="husband.jpg" alt="husband" style="width:100%; height:100%; object-fit:cover;">
+    </div>
+    <h1 class="slide-title" style="font-size:1.6rem">Твой <em>муж</em></h1>
+    <p class="slide-sub" style="color: var(--gold);">с любовью, навсегда 💍</p>
+    <div class="big-emoji" style="font-size:2rem; animation:float 2.5s ease-in-out infinite">❤️🩷🧡</div>
+  </div>
+
+</div>
+
+<script>
+/* ───────────── HEARTS CANVAS ───────────── */
+const canvas = document.getElementById('hearts-canvas');
+const ctx = canvas.getContext('2d');
+let hearts = [];
+
+function resize() {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+function randomHeart() {
+  const size = 10 + Math.random() * 28;
+  return {
+    x: Math.random() * canvas.width,
+    y: canvas.height + size + 20,
+    size,
+    speed: 0.4 + Math.random() * 1.2,
+    opacity: 0.15 + Math.random() * 0.55,
+    drift: (Math.random() - 0.5) * 0.6,
+    rotation: Math.random() * Math.PI * 2,
+    rotSpeed: (Math.random() - 0.5) * 0.03,
+    hue: 340 + Math.random() * 40,
+    sat: 60 + Math.random() * 30,
+  };
+}
+
+for (let i = 0; i < 28; i++) {
+  const h = randomHeart();
+  h.y = Math.random() * canvas.height;
+  hearts.push(h);
+}
+
+function drawHeart(ctx, x, y, size, angle) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(angle);
+  ctx.beginPath();
+  const s = size * 0.5;
+  ctx.moveTo(0, -s * 0.3);
+  ctx.bezierCurveTo( s,  -s,  s*1.4,  s*0.5,  0,  s);
+  ctx.bezierCurveTo(-s*1.4,  s*0.5, -s, -s,  0, -s * 0.3);
+  ctx.closePath();
+  ctx.restore();
+}
+
+function animateHearts() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  hearts.forEach((h, i) => {
+    h.y      -= h.speed;
+    h.x      += h.drift;
+    h.rotation += h.rotSpeed;
+    if (h.y < -h.size * 2) hearts[i] = randomHeart();
+
+    drawHeart(ctx, h.x, h.y, h.size, h.rotation);
+    ctx.fillStyle = `hsla(${h.hue}, ${h.sat}%, 65%, ${h.opacity})`;
+    ctx.fill();
+  });
+  requestAnimationFrame(animateHearts);
+}
+animateHearts();
+
+/* ───────────── SPARKLES ───────────── */
+const sparklesEl = document.getElementById('sparkles');
+for (let i = 0; i < 18; i++) {
+  const s = document.createElement('div');
+  s.className = 'sparkle';
+  s.style.left   = Math.random() * 100 + 'vw';
+  s.style.top    = Math.random() * 100 + 'vh';
+  s.style.animationDelay  = (Math.random() * 3) + 's';
+  s.style.animationDuration = (1.5 + Math.random() * 2) + 's';
+  s.style.width  = (3 + Math.random() * 4) + 'px';
+  s.style.height = s.style.width;
+  sparklesEl.appendChild(s);
+}
+
+/* ───────────── SLIDE LOGIC ───────────── */
+function goToSlide(n) {
+  document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+  const next = document.getElementById('slide' + n);
+  next.classList.add('active');
+  // reset animation
+  next.style.animation = 'none';
+  next.offsetHeight; // reflow
+  next.style.animation = '';
+}
+
+/* ───────────── NO BUTTON ───────────── */
+let noCount = 0;
+const btnNo = document.getElementById('btn-no');
+
+function handleNo() {
+  noCount++;
+  btnNo.classList.remove('flee');
+  void btnNo.offsetWidth;
+  btnNo.classList.add('flee');
+
+  // Make button shrink/fade after each click to hint it's losing
+  const scale = 1 - noCount * 0.08;
+  btnNo.style.transform = `scale(${Math.max(scale, 0.7)})`;
+  btnNo.style.opacity   = Math.max(1 - noCount * 0.15, 0.4);
+
+  if (noCount >= 3) {
+    btnNo.style.pointerEvents = 'none';
+    setTimeout(() => goToSlide(2), 350);
+  }
+}
+
+btnNo.addEventListener('animationend', () => {
+  btnNo.classList.remove('flee');
+});
+</script>
+</body>
+</html>
